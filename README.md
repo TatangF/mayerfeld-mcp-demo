@@ -138,7 +138,7 @@ Commande stdio : `python -m mayerfeld_mcp.server`, avec la variable `MCP_SANDBOX
 | Blocage de la sortie du sandbox (`../../etc/passwd`) | ✅ testé |
 | Client sans LLM | ✅ testé |
 | Boucle de l'agent avec un **faux** client Gemini | ✅ testé |
-| Appel réel à l'API Gemini avec une vraie clé | ⚠️ non testé : à essayer avant la démo |
+| Appel réel à l'API Gemini avec une vraie clé |✅ testé  |
 
 ## Versions
 
