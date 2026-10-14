@@ -1,0 +1,3 @@
+Réunion démo MCP - données fictives.
+Sujet: expliquer pourquoi MCP est appelé "USB-C pour les outils IA".
+TODO: préparer les captures d'écran de secours.
