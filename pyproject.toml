@@ -13,12 +13,14 @@ dependencies = ["mcp>=1.2,<2"]
 
 [project.optional-dependencies]
 agent = ["google-genai>=2,<3"]
+ui = ["gradio>=6,<7"]
 dev = ["pytest>=8", "pytest-asyncio>=0.23"]
 
 [project.scripts]
 mayerfeld-mcp-server = "mayerfeld_mcp.server:main"
 mayerfeld-mcp-client = "mayerfeld_mcp.client:main"
 mayerfeld-mcp-agent = "mayerfeld_mcp.agent:main"
+mayerfeld-mcp-ui = "mayerfeld_mcp.ui:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
