@@ -244,4 +244,4 @@ Stdio command: `python -m mayerfeld_mcp.server`, with the `MCP_SANDBOX_DIR` (and
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+Copyright (c) 2026 Ferol Tatang
