@@ -27,3 +27,28 @@ async def test_agent_loop_calls_mcp_tool(monkeypatch):
     monkeypatch.setenv("MCP_SANDBOX_DIR", os.path.abspath("sandbox"))
     fake = SimpleNamespace(aio=SimpleNamespace(models=FakeModels()))
     assert await run("liste mes fichiers", client=fake) == "OK"
+
+
+class BoomModels:
+    async def generate_content(self, model, contents, config):
+        raise RuntimeError("quota depasse")
+
+
+async def test_agent_surfaces_real_error_not_exception_group(monkeypatch):
+    import pytest
+
+    monkeypatch.setenv("MCP_SANDBOX_DIR", os.path.abspath("sandbox"))
+    fake = SimpleNamespace(aio=SimpleNamespace(models=BoomModels()))
+    with pytest.raises(RuntimeError, match="quota depasse"):
+        await run("salut", client=fake)
+
+
+async def test_ui_error_message_shows_real_cause(monkeypatch):
+    from mayerfeld_mcp.ui import _err
+
+    monkeypatch.setenv("MCP_SANDBOX_DIR", os.path.abspath("sandbox"))
+    fake = SimpleNamespace(aio=SimpleNamespace(models=BoomModels()))
+    try:
+        await run("salut", client=fake)
+    except Exception as exc:
+        assert "quota depasse" in _err(exc) and "ExceptionGroup" not in _err(exc)
