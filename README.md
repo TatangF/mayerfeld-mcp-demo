@@ -311,8 +311,8 @@ Stdio command: `python -m mayerfeld_mcp.server`, with the `MCP_SANDBOX_DIR` (and
 | UI starts, password enforced (401 without credentials), tools usable over HTTP | ✅ tested (script, Linux) |
 | Agent loop with a **fake** Gemini client | ✅ tested |
 | Real Gemini API call with a real key (CLI) | ✅ tested manually |
-| Real Gemini call **from the web UI** | ⚠️ to check manually |
-| UI rendering in a browser (layout, Windows) | ⚠️ to check manually |
+| Real Gemini call **from the web UI** | ✅ tested |
+| UI rendering in a browser (layout, Windows) | ✅ tested |
 
 ## Roadmap
 
@@ -337,4 +337,4 @@ Not implemented yet, in rough priority order:
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+Copyright (c) 2026 Ferol Tatang
