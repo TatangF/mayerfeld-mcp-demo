@@ -79,17 +79,17 @@ Limites connues : le mot de passe de l'interface est une protection de base (pas
 3. Refus : lire `../pyproject.toml` (le garde-fou bloque).
 4. Décocher « lecture seule », créer `test.txt`, vérifier dans l'onglet 3.
 
-**Plan B :** captures d'écran ou courte vidéo ; le client en ligne de commande fonctionne sans réseau ni clé.
+
 
 ## 8. Statut des vérifications
 
 | Élément | Statut |
 |---|---|
 | Serveur, outils, garde-fous, couche de service | ✅ 21 tests automatiques |
-| Interface démarrée, mot de passe appliqué | ✅ testé par script (Linux) |
-| Agent Gemini en ligne de commande | ✅ testé manuellement |
-| Agent Gemini depuis l'interface web | ⚠️ à vérifier manuellement |
-| Rendu dans le navigateur (Windows) | ⚠️ à vérifier manuellement |
+| Interface démarrée, mot de passe appliqué | ✅ testé |
+| Agent Gemini en ligne de commande | ✅ testé  |
+| Agent Gemini depuis l'interface web | ✅ testé  |
+| Rendu dans le navigateur (Windows) | ✅ testé  |
 
 ## 9. Limites et pistes d'évolution
 
