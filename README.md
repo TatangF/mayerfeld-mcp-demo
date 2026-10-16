@@ -1,67 +1,39 @@
 # mayerfeld-mcp-demo
 
-A hands-on demo of the **Model Context Protocol (MCP)** for **mayerfeld.consulting**: a sandboxed MCP file server, a minimal client that shows the raw protocol, a **Gemini Flash agent** (Google's free API tier) that chooses which tools to call on its own, and a **Gradio web interface** to test everything from a browser.
+A demonstrator for **mayerfeld.consulting** of a common enterprise use case: giving an AI assistant controlled access to an organization's files through the **Model Context Protocol (MCP)**. It includes a sandboxed MCP file server, a minimal client that shows the raw protocol, a **Gemini Flash agent** (Google's free API tier) that chooses which tools to call on its own, and a **Gradio web interface** to test everything from a browser.
 
 > ⚠️ **Throwaway data only.** The server only exposes `MCP_SANDBOX_DIR` (default `./sandbox`) and rejects any path outside it. Never point it at real files, and only send disposable data to the free API tier (see [Limits of the free tier](#limits-of-the-free-tier-gemini)).
 
 ## Architecture
 
-### 1. Layered view
+### 1. Linear view
 
-Each layer talks only to the one below it, and each layer owns one responsibility. The user interface contains **display code only**: all logic and security live in the service layer, which is why it can be tested without a browser.
+One straight path, from the user to the files. Each step talks only to the next one, and each step has a single responsibility. The web interface contains **display code only**: validation and security live in the service layer, which is why they can be tested without a browser.
 
 ```mermaid
-flowchart TB
-    subgraph PRES["① Presentation"]
-        BR["🌐 Browser"]
-        UI["Gradio UI<br/>ui.py · 3 tabs"]
-        CMD["Command line<br/>client.py · agent.py"]
-    end
+flowchart LR
+    A["👤 ① User<br/>browser or terminal"]
+    B["🌐 ② Gradio UI<br/>display only"]
+    C["🧾 ③ Service layer<br/>validation · rate limit"]
+    D["🧠 ④ Agent<br/>Gemini Flash chooses tools"]
+    E["🔌 ⑤ MCP client<br/>tools/list · tools/call"]
+    F["🧰 ⑥ MCP server<br/>guards · read-only mode"]
+    G[("📁 ⑦ sandbox/<br/>throwaway files")]
 
-    subgraph APP["② Application · service.py"]
-        VAL["Input validation<br/>prompt length · JSON object · tool name"]
-        RL["Rate limiter<br/>10 agent calls per minute"]
-    end
-
-    subgraph ORCH["③ Orchestration · agent.py"]
-        LOOP["Agent loop<br/>max 8 turns · tool-call trace"]
-        LLM["🧠 Gemini Flash<br/>external cloud API"]
-    end
-
-    subgraph PROTO["④ Protocol · MCP client"]
-        SESS["ClientSession<br/>initialize · tools/list · tools/call"]
-        ENV["server_params()<br/>explicit env · read-only flag"]
-    end
-
-    subgraph SRV["⑤ MCP server · server.py · child process"]
-        TOOLS["list_files · read_file<br/>search_files · write_file"]
-        GUARD["Guards<br/>_safe() · extensions · size cap"]
-    end
-
-    DATA[("⑥ Data · sandbox/<br/>throwaway files")]
-
-    BR --> UI
-    UI -->|"agent tab"| VAL
-    VAL --> RL
-    RL --> LOOP
-    CMD --> LOOP
-    LOOP <-->|"function_call / result"| LLM
-    LOOP --> SESS
-    UI -->|"tools tab"| SESS
-    ENV -.-> SESS
-    SESS <-->|"JSON-RPC over stdio"| TOOLS
-    TOOLS --> GUARD
-    GUARD --> DATA
+    A --> B --> C --> D --> E -->|"stdio · JSON-RPC"| F --> G
 ```
 
-| Layer | Files | Responsibility |
-|---|---|---|
-| ① Presentation | `ui.py`, `client.py`, `agent.py` (CLI entry points) | Display and user input. No business logic |
-| ② Application | `service.py` | Validation, rate limiting, launch checks, secret redaction, error mapping |
-| ③ Orchestration | `agent.py` | The agent loop: send tools and request to Gemini, run each `function_call`, feed results back |
-| ④ Protocol | `ClientSession` (`mcp` SDK), `client.server_params()` | MCP connection; builds the server launch environment explicitly |
-| ⑤ MCP server | `server.py` | Exposes the tools; enforces the path guard, extension allow-list, size cap and read-only mode |
-| ⑥ Data | `sandbox/` | Fake files read and written by the tools |
+| Step | Component | File | Responsibility |
+|---|---|---|---|
+| ① | User | n/a | Types a request in the browser or the terminal |
+| ② | Gradio UI | `ui.py` | Display and user input. No business logic |
+| ③ | Service layer | `service.py` | Input validation, rate limiting, launch checks, secret redaction |
+| ④ | Agent | `agent.py` | Agent loop: sends the tools and the request to Gemini, runs each `function_call`, feeds results back (max 8 turns) |
+| ⑤ | MCP client | `ClientSession` (`mcp` SDK), `client.py` | Keeps the connection to the server and builds its launch environment explicitly |
+| ⑥ | MCP server | `server.py` | Exposes the tools; enforces the path guard, extension allow-list, size cap and read-only mode |
+| ⑦ | Sandbox | `sandbox/` | Fake files read and written by the tools |
+
+Two shortcuts exist: the **command line** enters directly at ④ (`agent.py`) or ⑤ (`client.py`), and the UI's **tools tab** (no AI) goes straight from ② to ⑤.
 
 ### 2. Trust boundaries and data flows
 

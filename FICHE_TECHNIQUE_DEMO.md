@@ -4,9 +4,9 @@
 
 ## 1. Contexte et finalité
 
-Ce projet répond à un exercice de cours : expliquer **MCP (Model Context Protocol)**, pourquoi il est largement adopté pour connecter une IA à des outils, et le **montrer en direct** sur un exemple concret.
+Ce projet est un démonstrateur : il illustre un cas d’usage courant en entreprise, donner à un assistant IA un accès encadré aux fichiers d’une organisation, grâce à MCP (Model Context Protocol). Il a été réalisé pour expliquer MCP et le montrer en direct sur un exemple concret.
 
-La démo illustre ces cinq questions :
+Pour expliquer MCP, la démo répond à cinq questions :
 
 | Question | Réponse en bref |
 |---|---|
